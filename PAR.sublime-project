@@ -1,0 +1,15 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+    {
+         "sublimegdb_workingdir": "${folder:${project_path:PAR.exe}}",
+         // NOTE: You MUST provide --interpreter=mi for the plugin to work
+         "sublimegdb_commandline": "gdb --interpreter=mi ./PAR.exe"
+    
+    }
+}

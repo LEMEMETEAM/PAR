@@ -1,0 +1,3 @@
+C:/Users/bx_sa1/Documents/Programing/PAR/build/CMakeFiles/edit_cache.dir
+C:/Users/bx_sa1/Documents/Programing/PAR/build/CMakeFiles/PAR.dir
+C:/Users/bx_sa1/Documents/Programing/PAR/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<analyzerinfo checksum="877526611">
+        <error id="invalidPrintfArgType_sint" severity="warning" msg="%d in format string (no. 1) requires &apos;int&apos; but the argument type is &apos;unsigned int&apos;." verbose="%d in format string (no. 1) requires &apos;int&apos; but the argument type is &apos;unsigned int&apos;." cwe="686">
+            <location file0="C:\Users\bx_sa1\Documents\Programing\PAR\test\test.c" file="C:\Users\bx_sa1\Documents\Programing\PAR\test\test.c" line="111" column="28"/>
+        </error>
+  <FileInfo check="ctu">
+<function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/test/GLFW/glfw3.h:2464:14" call-funcname="glfwWindowHint" call-argnr="2" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="37" col="19" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/test/GLFW/glfw3.h:2656:21" call-funcname="glfwCreateWindow" call-argnr="4" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="39" col="39" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/test/GLFW/glfw3.h:2656:21" call-funcname="glfwCreateWindow" call-argnr="5" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="39" col="39" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:78:22" call-funcname="parCreateVertexBuffer" call-argnr="3" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="90" col="48" call-argexpr="NULL" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:78:22" call-funcname="parCreateVertexBuffer" call-argnr="3" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="91" col="49" call-argexpr="NULL" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:79:10" call-funcname="parUpdateVertexBuffer" call-argnr="3" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="105" col="26" call-argexpr="data" call-argvaluetype="7" call-argvalue="84"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:79:10" call-funcname="parUpdateVertexBuffer" call-argnr="4" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="105" col="26" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:79:10" call-funcname="parUpdateVertexBuffer" call-argnr="3" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="106" col="26" call-argexpr="data2" call-argvaluetype="7" call-argvalue="84"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:79:10" call-funcname="parUpdateVertexBuffer" call-argnr="4" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="106" col="26" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:81:10" call-funcname="parApplyVertexBuffer" call-argnr="3" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="107" col="25" call-argexpr="atts" call-argvaluetype="7" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:81:10" call-funcname="parApplyVertexBuffer" call-argnr="3" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="108" col="25" call-argexpr="atts" call-argvaluetype="7" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:82:10" call-funcname="parDrawVertexBuffer" call-argnr="4" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="120" col="28" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:82:10" call-funcname="parDrawVertexBuffer" call-argnr="4" file="C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c" line="121" col="28" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/>  </FileInfo>
+  <FileInfo check="Null pointer">
+    <unsafe-usage my-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:76:10" my-argnr="1" my-argname="ctx" file="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h" line="104" col="12" value="0"/>
+    <unsafe-usage my-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:79:10" my-argnr="2" my-argname="b" file="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h" line="157" col="16" value="0"/>
+    <unsafe-usage my-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:80:10" my-argnr="2" my-argname="b" file="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h" line="168" col="16" value="0"/>
+    <unsafe-usage my-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:81:10" my-argnr="2" my-argname="vb" file="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h" line="230" col="17" value="0"/>
+    <unsafe-usage my-id="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h:82:10" my-argnr="2" my-argname="b" file="C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h" line="278" col="35" value="0"/>
+  </FileInfo>
+  <FileInfo check="CheckUnusedFunctions">
+    <functiondecl functionName="main" lineNumber="29"/>
+    <functioncall functionName="FRAGMENT"/>
+    <functioncall functionName="GEOMETRY"/>
+    <functioncall functionName="NULL"/>
+    <functioncall functionName="PARErrorCallback"/>
+    <functioncall functionName="PAR_BYTE"/>
+    <functioncall functionName="PAR_DOUBLE"/>
+    <functioncall functionName="PAR_DYNAMIC"/>
+    <functioncall functionName="PAR_FIXED"/>
+    <functioncall functionName="PAR_FLOAT"/>
+    <functioncall functionName="PAR_HALF_FLOAT"/>
+    <functioncall functionName="PAR_INT"/>
+    <functioncall functionName="PAR_SHORT"/>
+    <functioncall functionName="PAR_STATIC"/>
+    <functioncall functionName="PAR_UNSIGNED_BYTE"/>
+    <functioncall functionName="PAR_UNSIGNED_INT"/>
+    <functioncall functionName="PAR_UNSIGNED_SHORT"/>
+    <functioncall functionName="VERTEX"/>
+    <functioncall functionName="att"/>
+    <functioncall functionName="atts"/>
+    <functioncall functionName="count"/>
+    <functioncall functionName="ctx"/>
+    <functioncall functionName="d3d11_device"/>
+    <functioncall functionName="d3d11_device_context"/>
+    <functioncall functionName="d3d11_device_ctx"/>
+    <functioncall functionName="data"/>
+    <functioncall functionName="data2"/>
+    <functioncall functionName="data_size"/>
+    <functioncall functionName="err"/>
+    <functioncall functionName="float"/>
+    <functioncall functionName="for"/>
+    <functioncall functionName="format"/>
+    <functioncall functionName="free"/>
+    <functioncall functionName="fs"/>
+    <functioncall functionName="fs_source"/>
+    <functioncall functionName="gl_parGetGLTypeSize"/>
+    <functioncall functionName="gl_parToGLType"/>
+    <functioncall functionName="gladLoadGLLoader"/>
+    <functioncall functionName="glad_glAttachShader"/>
+    <functioncall functionName="glad_glBindBuffer"/>
+    <functioncall functionName="glad_glBindVertexArray"/>
+    <functioncall functionName="glad_glBufferData"/>
+    <functioncall functionName="glad_glBufferSubData"/>
+    <functioncall functionName="glad_glClear"/>
+    <functioncall functionName="glad_glCompileShader"/>
+    <functioncall functionName="glad_glCreateProgram"/>
+    <functioncall functionName="glad_glCreateShader"/>
+    <functioncall functionName="glad_glDeleteBuffers"/>
+    <functioncall functionName="glad_glDeleteVertexArrays"/>
+    <functioncall functionName="glad_glDrawArrays"/>
+    <functioncall functionName="glad_glEnableVertexAttribArray"/>
+    <functioncall functionName="glad_glGenBuffers"/>
+    <functioncall functionName="glad_glGenVertexArrays"/>
+    <functioncall functionName="glad_glGetAttribLocation"/>
+    <functioncall functionName="glad_glGetBufferSubData"/>
+    <functioncall functionName="glad_glGetError"/>
+    <functioncall functionName="glad_glGetProgramInfoLog"/>
+    <functioncall functionName="glad_glGetProgramiv"/>
+    <functioncall functionName="glad_glGetShaderInfoLog"/>
+    <functioncall functionName="glad_glGetShaderiv"/>
+    <functioncall functionName="glad_glLinkProgram"/>
+    <functioncall functionName="glad_glShaderSource"/>
+    <functioncall functionName="glad_glUseProgram"/>
+    <functioncall functionName="glad_glValidateProgram"/>
+    <functioncall functionName="glad_glVertexAttribPointer"/>
+    <functioncall functionName="glfwCreateWindow"/>
+    <functioncall functionName="glfwGetProcAddress"/>
+    <functioncall functionName="glfwInit"/>
+    <functioncall functionName="glfwMakeContextCurrent"/>
+    <functioncall functionName="glfwPollEvents"/>
+    <functioncall functionName="glfwShowWindow"/>
+    <functioncall functionName="glfwSwapBuffers"/>
+    <functioncall functionName="glfwWindowHint"/>
+    <functioncall functionName="glfwWindowShouldClose"/>
+    <functioncall functionName="i"/>
+    <functioncall functionName="id"/>
+    <functioncall functionName="if"/>
+    <functioncall functionName="impl_data"/>
+    <functioncall functionName="infoLog"/>
+    <functioncall functionName="malloc"/>
+    <functioncall functionName="offset"/>
+    <functioncall functionName="old_data"/>
+    <functioncall functionName="parApplyVertexBuffer"/>
+    <functioncall functionName="parCreateVertexBuffer"/>
+    <functioncall functionName="parDrawVertexBuffer"/>
+    <functioncall functionName="parShutdown"/>
+    <functioncall functionName="parUpdateVertexBuffer"/>
+    <functioncall functionName="position"/>
+    <functioncall functionName="primitive"/>
+    <functioncall functionName="printf"/>
+    <functioncall functionName="prog"/>
+    <functioncall functionName="size"/>
+    <functioncall functionName="sizeof"/>
+    <functioncall functionName="start"/>
+    <functioncall functionName="stride"/>
+    <functioncall functionName="success"/>
+    <functioncall functionName="switch"/>
+    <functioncall functionName="type"/>
+    <functioncall functionName="usr_ptr"/>
+    <functioncall functionName="vao"/>
+    <functioncall functionName="vb"/>
+    <functioncall functionName="vb2"/>
+    <functioncall functionName="vbo"/>
+    <functioncall functionName="void"/>
+    <functioncall functionName="vs"/>
+    <functioncall functionName="vs_source"/>
+    <functioncall functionName="while"/>
+    <functioncall functionName="win"/>
+  </FileInfo>
+</analyzerinfo>

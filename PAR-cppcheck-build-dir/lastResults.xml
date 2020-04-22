@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results version="2">
+    <cppcheck version="1.90"/>
+    <errors>
+        <error id="invalidPrintfArgType_sint" severity="warning" msg="%d in format string (no. 1) requires &amp;#039;int&amp;#039; but the argument type is &amp;#039;unsigned int&amp;#039;." verbose="%d in format string (no. 1) requires &amp;#039;int&amp;#039; but the argument type is &amp;#039;unsigned int&amp;#039;." sinceDate="17/04/2020">
+            <location file="test\test.c" line="111"/>
+        </error>
+    </errors>
+</results>

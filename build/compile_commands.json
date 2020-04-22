@@ -1,0 +1,12 @@
+[
+{
+  "directory": "C:/Users/bx_sa1/Documents/Programing/PAR/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-W\\mingw64\\bin\\gcc.exe  @CMakeFiles/PAR.dir/includes_C.rsp -g   -o CMakeFiles\\PAR.dir\\test\\test.obj   -c C:\\Users\\bx_sa1\\Documents\\Programing\\PAR\\test\\test.c",
+  "file": "C:/Users/bx_sa1/Documents/Programing/PAR/test/test.c"
+},
+{
+  "directory": "C:/Users/bx_sa1/Documents/Programing/PAR/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-W\\mingw64\\bin\\gcc.exe  @CMakeFiles/PAR.dir/includes_C.rsp -g   -o CMakeFiles\\PAR.dir\\test\\glad.obj   -c C:\\Users\\bx_sa1\\Documents\\Programing\\PAR\\test\\glad.c",
+  "file": "C:/Users/bx_sa1/Documents/Programing/PAR/test/glad.c"
+}
+]

@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "par.h": "c",
+        "stdarg.h": "c",
+        "glad.h": "c"
+    }
+}
