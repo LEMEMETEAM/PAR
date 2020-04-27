@@ -67,8 +67,8 @@ int main()
     PARShaderProgram* prog = parCreateShaderProgram(ctx, shaders, 2);
 
     PARVertexAttrib atts[3] = {{glGetAttribLocation(prog->id, "in_Position"), 3, PAR_FLOAT}, {glGetAttribLocation(prog->id, "in_UV"), 2, PAR_FLOAT}, {glGetAttribLocation(prog->id, "in_Color"), 4, PAR_FLOAT}};
-    PARVertexBuffer* vb = parCreateVertexBuffer(ctx, PAR_DYNAMIC, NULL, 27*sizeof(float));
-    PARVertexBuffer* vb2 = parCreateVertexBuffer(ctx, PAR_DYNAMIC, NULL, 27*sizeof(float));
+    PARBuffer* vb = parCreateBuffer(ctx, PAR_VERTEX_BUFFER, PAR_DYNAMIC, NULL, 27*sizeof(float));
+    PARBuffer* vb2 = parCreateBuffer(ctx, PAR_VERTEX_BUFFER, PAR_DYNAMIC, NULL, 27*sizeof(float));
 
     float data[27] = {
         -1, -1, 0,  0, 0,  1, 0, 0, 1,
@@ -82,10 +82,10 @@ int main()
          1,  1, 0,  1, 1,  0, 0, 1, 1
     };
 
-    parUpdateVertexBuffer(ctx, vb, data, 0, sizeof(data));
-    parUpdateVertexBuffer(ctx, vb2, data2, 0, sizeof(data2));
-    parApplyVertexBuffer(ctx, vb, atts, 3);
-    parApplyVertexBuffer(ctx, vb2, atts, 3);
+    parUpdateBuffer(ctx, vb, data, 0, sizeof(data));
+    parUpdateBuffer(ctx, vb2, data2, 0, sizeof(data2));
+    PARRenderID r1 = parApplyDrawBuffers(ctx, vb, atts, 3, 0);
+    PARRenderID r2 = parApplyDrawBuffers(ctx, vb2, atts, 3, 0);
 
     uint32_t tex_data[3*3] = {
         0xFFFFFF, 0x000000, 0xFFFFFF,
@@ -110,14 +110,17 @@ int main()
 
         parBindTexture(ctx, tex, 0);
         parBindShaderProgram(ctx, prog);
-        parDrawVertexBuffer(ctx, vb, GL_TRIANGLES, 0, 3);
-        parDrawVertexBuffer(ctx, vb2, GL_TRIANGLES, 0, 3);
+        parDraw(ctx, r1, GL_TRIANGLES, 0, 3);
+        parDraw(ctx, r2, GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(win);
     }
+    
+    parFreeDrawBuffers(ctx, r1);
+    parFreeDrawBuffers(ctx, r2);
 
-    parDeleteVertexBuffer(ctx, vb);
-    parDeleteVertexBuffer(ctx, vb2);
+    parDeleteBuffer(ctx, vb);
+    parDeleteBuffer(ctx, vb2);
 
     parDeleteShaderProgram(ctx, prog);
     parDeleteShader(ctx, vs);
