@@ -5,6 +5,7 @@
         extern "C"
         {
     #endif
+
         typedef struct PARParams
         {
             void* d3d11_device;
@@ -17,7 +18,6 @@
         {
             void* usr_ptr;
             PARErrorCallback error;
-
             void* d3d10_device;
             void* d3d10_device_ctx;
         } PARContext;
@@ -36,25 +36,33 @@
             PAR_DOUBLE
         } PARDataType;
 
+        typedef void* PARRenderID;
+
         typedef struct PARVertexAttrib
         {
             int position, size;
             PARDataType format;
         } PARVertexAttrib;
-        typedef enum PARVertexBufferType
+
+        typedef enum PARBufferType
+        {
+            PAR_VERTEX_BUFFER,
+            PAR_INDEX_BUFFER
+        } PARBufferType;
+
+        typedef enum PARBufferStorageType
         {
             PAR_STATIC,
             PAR_DYNAMIC
-        } PARVertexBufferType;
-        struct PARVertexBufferImplData;
-        typedef struct PARVertexBuffer {
-            int stride;
-            PARVertexAttrib* attribs;
-            int attribs_size;
-            PARVertexBufferType vb_type;
+        } PARBufferStorageType;
+    
+        struct PARBufferID;
+        typedef struct PARBuffer {
+            PARBufferType type;
+            PARBufferStorageType s_type;
             int size;
-            struct PARVertexBufferImplData* impl_data;
-        } PARVertexBuffer;
+            struct PARBufferID* id;
+        } PARBuffer;
 
         typedef enum PARShaderType
         {
@@ -174,6 +182,7 @@
             PARTextureParameter param;
             PARTextureParamValue value;
         } PARTextureParamsPair;
+
         typedef struct PARTextureInfo
         {
             void* data;
@@ -182,6 +191,7 @@
             PARTextureParamsPair params[PAR_TEXTURE_PARAMETER_COUNT];
             int params_count;
         } PARTextureInfo;
+
         typedef struct PARFramebuffer
         {
 
@@ -194,13 +204,15 @@
         PARContext* parInit(PARParams params);
         void parShutdown(PARContext* ctx);
         void parSetErrorCallback(PARContext* ctx, PARErrorCallback error);
+        
+        PARRenderID parApplyDrawBuffers(PARContext* ctx, PARBuffer* vb, PARVertexAttrib* att, int att_size, PARBuffer* ib);
+        void parDraw(PARContext* ctx, PARRenderID r_id, unsigned int primitive, int start, int count);
+        void parFreeDrawBuffers(PARContext* ctx, PARRenderID r_id);
 
-        PARVertexBuffer* parCreateVertexBuffer(PARContext* ctx, PARVertexBufferType type, void* data, int data_size);
-        void parUpdateVertexBuffer(PARContext* ctx, PARVertexBuffer* b, void* data, int offset, int size);
-        void parAppendVertexBuffer(PARContext* ctx, PARVertexBuffer* b, void* data, int size);
-        void parApplyVertexBuffer(PARContext* ctx, PARVertexBuffer* vb, PARVertexAttrib* att, int att_size);
-        void parDrawVertexBuffer(PARContext* ctx, PARVertexBuffer* b, unsigned int primitive, int start, int count);
-        void parDeleteVertexBuffer(PARContext* ctx, PARVertexBuffer* vb);
+        PARBuffer* parCreateBuffer(PARContext* ctx, PARBufferType type, PARBufferStorageType s_type, void* data, int data_size);
+        void parUpdateBuffer(PARContext* ctx, PARBuffer* b, void* data, int offset, int size);
+        void parAppendBuffer(PARContext* ctx, PARBuffer* b, void* data, int size);
+        void parDeleteVertexBuffer(PARContext* ctx, PARBuffer* b);
 
         PARShader* parCreateShader(PARContext* ctx, PARShaderType type, const char** strings, const int* length, int count);
         void parDeleteShader(PARContext* ctx, PARShader* shader);
@@ -220,6 +232,7 @@
 
 #if defined(PAR_GL2_IMPLEMENTATION) || defined(PAR_GL3_IMPLEMENTATION) || defined(PAR_D3D11_IMPLEMENTATION)
     #include <stdlib.h>
+    #define VOID_TO_TYPE(type, ptr) (*((type*)ptr))
 
     PARContext* parInit(PARParams params)
     {
@@ -250,73 +263,6 @@
     }
 
     #if defined(PAR_GL2_IMPLEMENTATION) || defined(PAR_GL3_IMPLEMENTATION)
-        struct PARVertexBufferImplData
-        {
-            int vbo;
-            #ifdef PAR_GL3_IMPLEMENTATION
-                int vao;
-            #endif
-        };
-
-        PARVertexBuffer* parCreateVertexBuffer(PARContext* ctx, PARVertexBufferType type, void* data, int data_size)
-        {
-            PARVertexBuffer* vb = malloc(sizeof(PARVertexBuffer));
-
-            struct PARVertexBufferImplData* id = malloc(sizeof(struct PARVertexBufferImplData));
-
-            #ifdef PAR_GL3_IMPLEMENTATION
-                glGenVertexArrays(1, &id->vao);
-            #endif
-
-            glGenBuffers(1, &id->vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, id->vbo);
-
-            if(type == PAR_STATIC)
-            {
-                glBufferData(GL_ARRAY_BUFFER, data_size, data, GL_STATIC_DRAW);
-            }
-            else if(type == PAR_DYNAMIC)
-            {
-                glBufferData(GL_ARRAY_BUFFER, data_size, data, GL_DYNAMIC_DRAW);
-            }
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-            vb->stride = 0;
-            vb->attribs = NULL;
-            vb->vb_type = type;
-            vb->impl_data = id;
-            vb->size = data_size;
-
-            return vb;
-        }
-
-        void parUpdateVertexBuffer(PARContext* ctx, PARVertexBuffer* b, void* data, int offset, int size)
-        {
-            if(b->vb_type == PAR_DYNAMIC)
-            {
-                glBindBuffer(GL_ARRAY_BUFFER, b->impl_data->vbo);
-                glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-            }
-
-        }
-
-        void parAppendVertexBuffer(PARContext* ctx, PARVertexBuffer* b, void* data, int size)
-        {
-            if(b->vb_type == PAR_DYNAMIC)
-            {
-                    glBindBuffer(GL_ARRAY_BUFFER, b->impl_data->vbo);
-                    void* old_data;
-                    glGetBufferSubData(GL_ARRAY_BUFFER, 0, b->size, old_data);
-                    glBufferData(GL_ARRAY_BUFFER, b->size + size, old_data, GL_DYNAMIC_DRAW);
-                    glBufferSubData(GL_ARRAY_BUFFER, b->size, size, data);
-                    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-                    b->size += size;
-            }
-        }
-
         static int gl_parGetGLTypeSize(PARDataType type)
         {
             switch(type)
@@ -345,8 +291,38 @@
             }
         }
 
-        void parApplyVertexBuffer(PARContext* ctx, PARVertexBuffer* vb, PARVertexAttrib* att, int att_size)
+        static GLenum gl_parToGLBufferType(PARBufferType t)
         {
+            switch(t)
+            {
+                case PAR_VERTEX_BUFFER: return GL_ARRAY_BUFFER;
+                case PAR_INDEX_BUFFER: return GL_ELEMENT_ARRAY_BUFFER;
+            }
+        }
+
+        struct _PARRenderID
+        {
+            #ifdef PAR_GL2_IMPLEMENTATION
+                int stride;
+                PARVertexAttrib* attribs;
+                int attribs_size;
+                PARBuffer* vbo;
+                PARBuffer* ibo;
+            #elif defined(PAR_GL3_IMPLEMENTATION)
+                GLuint vao;
+                int elements;
+            #endif
+        };
+        
+        struct PARBufferID
+        {
+            GLuint id;    
+        };
+
+        PARRenderID parApplyDrawBuffers(PARContext* ctx, PARBuffer* vb, PARVertexAttrib* att, int att_size, PARBuffer* ib)
+        {
+            struct _PARRenderID* rid = malloc(sizeof(struct _PARRenderID));
+
             #ifdef PAR_GL2_IMPLEMENTATION
                 int stride = 0;
                 for(int i = 0; i < att_size; i++)
@@ -355,23 +331,31 @@
                     stride += a.size;
                 }
 
-                vb->stride = stride;
-                vb->attribs = att;
-                vb->attribs_size = att_size;
+                rid->stride = stride;
+                rid->attribs = att;
+                rid->attribs_size = att_size;
+                rid->vbo = vb;
+                rid->ibo = ib;
             #elif defined(PAR_GL3_IMPLEMENTATION)
+                rid->elements = 0;
                 int stride = 0;
                 for(int i = 0; i < att_size; i++)
                 {
                     PARVertexAttrib a = att[i];
                     stride += a.size;
                 }
+                
+                glGenVertexArrays(1, &rid->vao);
 
-                vb->stride = stride;
-                vb->attribs = att;
+                glBindBuffer(GL_ARRAY_BUFFER, vb->id->id);
 
-                glBindBuffer(GL_ARRAY_BUFFER, vb->impl_data->vbo);
+                glBindVertexArray(rid->vao);
 
-                glBindVertexArray(vb->impl_data->vao);
+                if(ib!=0) 
+                {
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id->id);
+                    rid->elements = 1;
+                }
 
                 int offset = 0;
 
@@ -385,58 +369,142 @@
 
                 glBindVertexArray(0);
 
+                if(ib!=0)glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
             #endif
+
+            return (PARRenderID)rid;
         }
 
-        void parDrawVertexBuffer(PARContext* ctx, PARVertexBuffer* b, unsigned int primitive, int start, int count)
+        void parDraw(PARContext* ctx, PARRenderID r_id, unsigned int primitive, int start, int count)
         {
+            struct _PARRenderID* rid = (struct _PARRenderID*)r_id;
             #ifdef PAR_GL2_IMPLEMENTATION
-                glBindBuffer(GL_ARRAY_BUFFER, b->impl_data->vbo);
+                glBindBuffer(GL_ARRAY_BUFFER, rid->vbo->id->id);
 
                 int offset = 0;
 
-                for(int i = 0; i < b->attribs_size; i++)
+                for(int i = 0; i < rid->attribs_size; i++)
                 {
-                    PARVertexAttrib a = b->attribs[i];
-                    glVertexAttribPointer(a.position, a.size, gl_parToGLType(a.format), GL_FALSE, b->stride * gl_parGetGLTypeSize(a.format), (void*)(offset*gl_parGetGLTypeSize(a.format)));
+                    PARVertexAttrib a = rid->attribs[i];
+                    glVertexAttribPointer(a.position, a.size, gl_parToGLType(a.format), GL_FALSE, rid->stride * gl_parGetGLTypeSize(a.format), (void*)(offset*gl_parGetGLTypeSize(a.format)));
                     glEnableVertexAttribArray(a.position);
                     offset += a.size;
                 }
+                
 
-                glDrawArrays(primitive, start, count);
-
-                for(int i = 0; i < b->attribs_size; i++)
+                if(!rid->ibo)
                 {
-                    PARVertexAttrib a = b->attribs[i];
+                    glDrawArrays(primitive, start, count);
+                } 
+                else 
+                {
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rid->ibo->id->id);
+                    glDrawElements(primitive, count, GL_UNSIGNED_INT, 0);
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+                }
+
+                for(int i = 0; i < rid->attribs_size; i++)
+                {
+                    PARVertexAttrib a = rid->attribs[i];
                     glDisableVertexAttribArray(a.position);
                 }
 
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
             #elif defined(PAR_GL3_IMPLEMENTATION)
-                glBindVertexArray(b->impl_data->vao);
-                glDrawArrays(primitive, start, count);
+                glBindVertexArray(rid->vao);
+                if(!rid->elements) glDrawArrays(primitive, start, count);
+                else glDrawElements(primitive, count, GL_UNSIGNED_INT, 0);
                 glBindVertexArray(0);
             #endif
         }
 
-        void parDeleteVertexBuffer(PARContext* ctx, PARVertexBuffer* vb)
+        void parFreeDrawBuffers(PARContext* ctx, PARRenderID r_id)
         {
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glDeleteBuffers(1, &vb->impl_data->vbo);
-
-            #ifdef PAR_GL3_IMPLEMENTATION
-                glBindVertexArray(0);
-                glDeleteVertexArrays(1, &vb->impl_data->vao);
+            struct _PARRenderID* rid = (struct _PARRenderID*)r_id;
+            #ifdef PAR_GL2_IMPLEMENTATION
+                rid->stride = 0;
+                rid->attribs = 0;
+                rid->attribs_size = 0;
+                rid->vbo = 0;
+                rid->ibo = 0;
+            #elif defined(PAR_GL3_IMPLEMENTATION)
+                rid->vao = 0;
+                glBindVertexArray(rid->vao);
+                glDeleteVertexArrays(1, &rid->vao);
+                rid->elements = 0;
             #endif
 
-            vb->stride = 0;
-            vb->attribs = NULL;
+            free(rid);
+        }
 
-            free(vb->impl_data);
-            vb->impl_data = NULL;
+        PARBuffer* parCreateBuffer(PARContext* ctx, PARBufferType type, PARBufferStorageType s_type, void* data, int data_size)
+        {
+            PARBuffer* vb = malloc(sizeof(PARBuffer));
+            
+            vb->id = malloc(sizeof(struct PARBufferID));
 
-            free(vb);
+            GLenum gltype = gl_parToGLBufferType(type);
+
+            glGenBuffers(1, &(vb->id->id));
+            glBindBuffer(gltype, vb->id->id);
+
+            if(s_type == PAR_STATIC)
+            {
+                glBufferData(gltype, data_size, data, GL_STATIC_DRAW);
+            }
+            else if(s_type == PAR_DYNAMIC)
+            {
+                glBufferData(gltype, data_size, data, GL_DYNAMIC_DRAW);
+            }
+
+            glBindBuffer(gltype, 0);
+
+            vb->type = type;
+            vb->s_type = s_type;
+            vb->size = data_size;
+
+            return vb;
+        }
+
+        void parUpdateBuffer(PARContext* ctx, PARBuffer* b, void* data, int offset, int size)
+        {
+            if(b->s_type == PAR_DYNAMIC)
+            {
+                GLenum gltype = gl_parToGLBufferType(b->type);
+                glBindBuffer(gltype, b->id->id);
+                glBufferSubData(gltype, offset, size, data);
+                glBindBuffer(gltype, 0);
+            }
+
+        }
+
+        void parAppendBuffer(PARContext* ctx, PARBuffer* b, void* data, int size)
+        {
+            if(b->s_type == PAR_DYNAMIC)
+            {
+                GLenum gltype = gl_parToGLBufferType(b->type);
+                glBindBuffer(gltype, b->id->id);
+                void* old_data;
+                glGetBufferSubData(gltype, 0, b->size, old_data);
+                glBufferData(gltype, b->size + size, old_data, GL_DYNAMIC_DRAW);
+                glBufferSubData(gltype, b->size, size, data);
+                glBindBuffer(gltype, 0);
+
+                b->size += size;
+            }
+        }
+
+        void parDeleteBuffer(PARContext* ctx, PARBuffer* b)
+        {
+            glBindBuffer(gl_parToGLBufferType(b->type), 0);
+            glDeleteBuffers(1, &b->id->id);
+            
+            free(b->id);
+            b->id = 0;
+
+            free(b);
         }
 
         PARShader* parCreateShader(PARContext* ctx, PARShaderType type, const char** strings, const int* length, int count)
