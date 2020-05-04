@@ -1,4 +1,3 @@
-#include "glad/glad.h"
 #define PAR_GL2_IMPLEMENTATION
 #include "../src/PAR.h"
 #include "GLFW/glfw3.h"
@@ -58,34 +57,37 @@ int main()
 
     glfwShowWindow(win);
 
-    PARContext* ctx = parInit((PARParams){0});
-    parSetErrorCallback(ctx, par_error_callback);
+    parInit((PARParams){0});
 
-    PARShader* vs = parCreateShader(ctx, VERTEX, &vs_source, NULL, 1);
-    PARShader* fs = parCreateShader(ctx, FRAGMENT, &fs_source, NULL, 1);
+    PARShader* vs = parCreateShader(VERTEX, &vs_source, NULL, 1);
+    PARShader* fs = parCreateShader(FRAGMENT, &fs_source, NULL, 1);
     PARShader* shaders[2] = {vs, fs};
-    PARShaderProgram* prog = parCreateShaderProgram(ctx, shaders, 2);
+    PARShaderProgram* prog = parCreateShaderProgram(shaders, 2);
 
     PARVertexAttrib atts[3] = {{glGetAttribLocation(prog->id, "in_Position"), 3, PAR_FLOAT}, {glGetAttribLocation(prog->id, "in_UV"), 2, PAR_FLOAT}, {glGetAttribLocation(prog->id, "in_Color"), 4, PAR_FLOAT}};
-    PARBuffer* vb = parCreateBuffer(ctx, PAR_VERTEX_BUFFER, PAR_DYNAMIC, NULL, 27*sizeof(float));
-    PARBuffer* vb2 = parCreateBuffer(ctx, PAR_VERTEX_BUFFER, PAR_DYNAMIC, NULL, 27*sizeof(float));
+    PARBuffer* vb = parCreateBuffer(PAR_VERTEX_BUFFER, PAR_DYNAMIC, NULL, 27*sizeof(float));
+    PARBuffer* ib = parCreateBuffer(PAR_INDEX_BUFFER, PAR_DYNAMIC, NULL, 27*sizeof(float));
 
-    float data[27] = {
+    float vb_data[36] = {
         -1, -1, 0,  0, 0,  1, 0, 0, 1,
          1, -1, 0,  1, 0,  0, 1, 0, 1,
          1,  1, 0,  1, 1,  0, 0, 1, 1
+        -1,  1, 0,  0, 1,  1, 1, 0, 1
     };
 
-    float data2[27] = {
-        -1, -1, 0,  0, 0,  1, 0, 0, 1,
-        -1,  1, 0,  0, 1,  0, 1, 0, 1,
-         1,  1, 0,  1, 1,  0, 0, 1, 1
-    };
+    float ib_data[6] = {
+        0, 1, 2,
+        2, 3, 0
+    }
 
-    parUpdateBuffer(ctx, vb, data, 0, sizeof(data));
-    parUpdateBuffer(ctx, vb2, data2, 0, sizeof(data2));
-    PARRenderID r1 = parApplyDrawBuffers(ctx, vb, atts, 3, 0);
-    PARRenderID r2 = parApplyDrawBuffers(ctx, vb2, atts, 3, 0);
+    parUpdateBuffer(vb, vb_data, 0, sizeof(vb_data));
+    parUpdateBuffer(ib, ib_data, 0, sizeof(ib_data));
+
+    PARPipelineParams p_params = {0};
+    p_params.attributes = atts;
+    p_params.attributes_count = 3;
+    p_params.shader = prog;
+    PARPipeline *p = parCreatePipeline(p_params);
 
     uint32_t tex_data[3*3] = {
         0xFFFFFF, 0x000000, 0xFFFFFF,
@@ -100,7 +102,7 @@ int main()
     // };
 
     PARTextureInfo inf = {tex_data, PAR_PIXEL_FORMAT_RGBA8, 3, 3, 0, {{PAR_TEXTURE_MIN_FILTER, PAR_NEAREST}, {PAR_TEXTURE_MAG_FILTER, PAR_NEAREST}}, 2};
-    PARTexture* tex = parCreateTexture(ctx, inf, PAR_TEXTURE_2D);
+    PARTexture* tex = parCreateTexture(inf, PAR_TEXTURE_2D);
 
     while(!glfwWindowShouldClose(win))
     {
@@ -108,25 +110,25 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        parBindTexture(ctx, tex, 0);
-        parBindShaderProgram(ctx, prog);
-        parDraw(ctx, r1, GL_TRIANGLES, 0, 3);
-        parDraw(ctx, r2, GL_TRIANGLES, 0, 3);
+        parBindTexture(tex, 0);
+        parBindShaderProgram(prog);
+        parDraw(r1, GL_TRIANGLES, 0, 3);
+        parDraw(r2, GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(win);
     }
     
-    parFreeDrawBuffers(ctx, r1);
-    parFreeDrawBuffers(ctx, r2);
+    parFreeDrawBuffers(r1);
+    parFreeDrawBuffers(r2);
 
-    parDeleteBuffer(ctx, vb);
-    parDeleteBuffer(ctx, vb2);
+    parDeleteBuffer(vb);
+    parDeleteBuffer(vb2);
 
-    parDeleteShaderProgram(ctx, prog);
-    parDeleteShader(ctx, vs);
-    parDeleteShader(ctx, fs);
+    parDeleteShaderProgram(prog);
+    parDeleteShader(vs);
+    parDeleteShader(fs);
 
-    parDeleteTexture(ctx, tex);
+    parDeleteTexture(tex);
 
     parShutdown(ctx);
 

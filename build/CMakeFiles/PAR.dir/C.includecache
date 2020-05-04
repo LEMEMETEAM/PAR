@@ -17,6 +17,10 @@ stdint.h
 C:/Users/bx_sa1/Documents/Programing/PAR/src/PAR.h
 stdlib.h
 -
+assert.h
+-
+stdio.h
+-
 
 C:/Users/bx_sa1/Documents/Programing/PAR/test/GLFW/glfw3.h
 stddef.h
